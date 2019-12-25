@@ -47,6 +47,15 @@ const dispatch = useDispatch();
                     color={Colors.accent}
                     title='Order Now '
                     disabled={cartItems.length === 0}
+                    onPress={() => {
+                        props.navigation.navigate({
+                            routeName: 'ProductDetail',
+                            params: {
+                                productId: itemData.item.id,
+                                productTitle: itemData.item.title,
+                            }
+                        })
+                    }}
                     onPress = { () => {
                         
                        dispatch(ordersActions.addOrder(cartItems, cartToAmount))

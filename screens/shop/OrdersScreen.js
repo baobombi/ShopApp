@@ -3,15 +3,17 @@ import {
     View,
     FlatList,
     StyleSheet,
-    Text
+    Text,
+    Platform
 
 } from 'react-native'
 
-import { userSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
+import IconHeader from '../../components/UI/IconHeader';
 
 const OrdersScreens = (props) => {
 
-    const orders = userSelector(state => state.orders.orders)
+    const orders = useSelector(state => state.orders.orders)
 
     return (
         <FlatList
@@ -23,9 +25,15 @@ const OrdersScreens = (props) => {
     );
 
 };
-OrdersScreens.navigationOptions = () => {
+OrdersScreens.navigationOptions = (navData) => {
     return {
-        headerTitle: 'Your Orders'
+        headerTitle: 'Your Orders',
+        headerLeft: <IconHeader
+            name={Platform.OS === 'android' ? 'md-menu' : 'ios-menu'}
+            onTapped={() => {
+                navData.navigation.toggleDrawer();
+            }}
+        />,
     }
 }
 const styles = StyleSheet.create({

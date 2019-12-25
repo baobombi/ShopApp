@@ -1,3 +1,4 @@
+import React from 'react'
 import {
     Platform,
     Dimensions
@@ -10,6 +11,7 @@ import Colors from '../constants/Colors';
 import ProductDetailScreen from '../screens/shop/ProductDetailScreen';
 import CartScreen from '../screens/shop/CartScreen';
 import OrdersScreens from '../screens/shop/OrdersScreen';
+import Icon from 'react-native-vector-icons/Ionicons'
 
 const { width, height } = Dimensions.get('screen');
 
@@ -26,6 +28,13 @@ const ProductsNavtigator = createStackNavigator({
 }, {
     mode: 'modal',
     initialRouteName: 'ProductsOverview',
+    navigationOptions: {
+        drawerIcon: drawerConfig => <Icon 
+        name = {Platform.OS ==='android' ? 'md-cart' : 'ios-cart'}
+        size= {23}
+        color = {drawerConfig.tintColor}
+        />
+    },
     defaultNavigationOptions: defaultNavOptions
 })
 const OrderNavigator = createStackNavigator(
@@ -33,6 +42,13 @@ const OrderNavigator = createStackNavigator(
         OrdersScreens: OrdersScreens
     },
     {
+        navigationOptions: {
+            drawerIcon: drawerConfig => <Icon 
+            name = {Platform.OS ==='android' ? 'md-list' : 'ios-list'}
+            size= {23}
+            color = {drawerConfig.tintColor}
+            />
+        },
         defaultNavigationOptions: defaultNavOptions
     }
 
