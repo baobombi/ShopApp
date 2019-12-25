@@ -61,7 +61,13 @@ ProductOverViewScreen.navigationOptions = navData => {
             onTapped={() => {
                 navData.navigation.navigate({ routeName: 'Cart'});
             }}
-        />
+        />,
+        headerLeft: <IconHeader
+            name={Platform.OS === 'android' ? 'md-menu' : 'ios-menu'}
+            onTapped={() => {
+                navData.navigation.toggleDrawer();
+            }}
+        />,
 
     };
 

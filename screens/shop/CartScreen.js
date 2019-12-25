@@ -12,6 +12,9 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 import CartItem from '../../components/shop/CartItem';
 import * as cartActions from '../../store/actions/cart'
+import * as ordersActions from '../../store/actions/orders'
+
+
 
 const CartScreen = (props) => {
 
@@ -30,7 +33,9 @@ const CartScreen = (props) => {
                 sum: state.cart.items[key].sum
             });
         }
-        return transformedCartItems.sort();
+        return transformedCartItems.sort((a,b) => 
+            a.productId > b.productId ? 1 : -1
+        );
         return;
     })
 const dispatch = useDispatch();
@@ -42,6 +47,10 @@ const dispatch = useDispatch();
                     color={Colors.accent}
                     title='Order Now '
                     disabled={cartItems.length === 0}
+                    onPress = { () => {
+                        
+                       dispatch(ordersActions.addOrder(cartItems, cartToAmount))
+                    }}
                 />
             </View>
             <FlatList
