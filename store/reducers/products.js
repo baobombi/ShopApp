@@ -1,5 +1,5 @@
 import PRODUCTS from '../../data/dummy-data';
-import { ADD_FAVORITE_PRODUCT } from '../actions/products';
+import { ADD_FAVORITE_PRODUCT, DELETE_PRODUCT } from '../actions/products';
 
 const initialState = {
 
@@ -24,6 +24,17 @@ export default (state = initialState, action) => {
             const createFavoriteProduct = state.availableProducts.find(prod => prod.id === action.productID)
             return { ...state,favoriteProduct: state.favoriteProduct.concat(createFavoriteProduct) }
         }
+
+        case DELETE_PRODUCT :
+            const userDeleteFavProduct = state.favoriteProduct.findIndex(prod => prod.id === action.pid)
+            const updateFavoriteProduct = [...state.favoriteProduct]
+            updateFavoriteProduct.splice(userDeleteFavProduct, 1)
+            return {
+                ...state,
+                userProducts: state.userProducts.filter(product =>product.id !== action.pid),
+                availableProducts: state.availableProducts.filter(product =>product.id !== action.pid),
+                favoriteProduct: updateFavoriteProduct
+            }
 
     }
     return state;

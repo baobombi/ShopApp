@@ -6,7 +6,6 @@ class Product {
             this.description = description,
             this.price = price,
             this.title = title
-
     }
 }
 export default Product;

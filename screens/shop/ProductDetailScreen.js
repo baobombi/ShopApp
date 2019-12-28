@@ -87,11 +87,14 @@ ProductDetailScreen.navigationOptions = navData => {
     }
 
     return {
+
         headerTitle: navData.navigation.getParam('productTitle'),
         headerRight: (
             <View style={styles.viewItemIcons}>
-                <IconHeader onTapped={FavShowAlert} name={ isFavorite ? 'ios-star' : 'ios-star-outline'} />
-            </View>)
+                <IconHeader onTapped={FavShowAlert} name={isFavorite ? 'ios-star' : 'ios-star-outline'} />
+            </View>),
+       
+
     }
 
 }
