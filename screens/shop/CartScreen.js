@@ -13,6 +13,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import CartItem from '../../components/shop/CartItem';
 import * as cartActions from '../../store/actions/cart'
 import * as ordersActions from '../../store/actions/orders'
+import Card from '../../components/UI/Card';
 
 
 
@@ -33,15 +34,15 @@ const CartScreen = (props) => {
                 sum: state.cart.items[key].sum
             });
         }
-        return transformedCartItems.sort((a,b) => 
+        return transformedCartItems.sort((a, b) =>
             a.productId > b.productId ? 1 : -1
         );
         return;
     })
-const dispatch = useDispatch();
+    const dispatch = useDispatch();
     return (
         <View style={styles.screen}>
-            <View style={styles.summary}>
+            <Card style={styles.summary}>
                 <Text style={styles.summaryText}> Total: <Text style={styles.amount}>${cartToAmount.toFixed(2)}</Text></Text>
                 <Button
                     color={Colors.accent}
@@ -56,12 +57,12 @@ const dispatch = useDispatch();
                             }
                         })
                     }}
-                    onPress = { () => {
-                        
-                       dispatch(ordersActions.addOrder(cartItems, cartToAmount))
+                    onPress={() => {
+
+                        dispatch(ordersActions.addOrder(cartItems, cartToAmount))
                     }}
                 />
-            </View>
+            </Card>
             <FlatList
                 data={cartItems}
                 keyExtractor={item => item.productId}
@@ -71,7 +72,7 @@ const dispatch = useDispatch();
                         title={itemData.item.productTitle}
                         amount={itemData.item.sum}
                         deletable
-                        onRemove = {() => dispatch(cartActions.removeFromCart(itemData.item.productId))}
+                        onRemove={() => dispatch(cartActions.removeFromCart(itemData.item.productId))}
                     />
                 )}
 
@@ -99,14 +100,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 20,
-        padding: 10,
-        shadowColor: 'black',
-        shadowOpacity: 0.26,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 8,
-        elevation: 5,
-        borderRadius: 10,
-        backgroundColor: 'white',
+        padding: 10
     },
 
     summaryText: {

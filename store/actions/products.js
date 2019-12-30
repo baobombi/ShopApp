@@ -1,12 +1,16 @@
-export const ADD_FAVORITE_PRODUCT = 'ADD_FAVORITE_PRODUCT' 
+export const ADD_FAVORITE_PRODUCT = 'ADD_FAVORITE_PRODUCT'
 
 export const DELETE_PRODUCT = 'DELETE_PRODUCT'
 
-export const addFavoriteProduct = (id)  =>{
-        return {
-            type: ADD_FAVORITE_PRODUCT,
-            productID: id,
-        }
+export const CREATE_PRODUCT = 'CREATE_PRODUCT'
+
+export const UPDATE_PRODUCT = 'UPDATE_PRODUCT'
+
+export const addFavoriteProduct = (id) => {
+    return {
+        type: ADD_FAVORITE_PRODUCT,
+        productID: id,
+    }
 }
 
 export const deleteProduct = productId => {
@@ -15,3 +19,30 @@ export const deleteProduct = productId => {
         pid: productId
     }
 }
+
+export const createProduct = (title, description, imageUrl, price) => {
+
+    return {
+        type: CREATE_PRODUCT,
+        productData: {
+            title: title,
+            description: description,
+            imageUrl: imageUrl,
+            price: price
+        }
+
+    }
+}
+export const updateProduct = (id, title, description, imageUrl, price) => {
+    return {
+        type: UPDATE_PRODUCT,
+        pid: id,
+        productData: {
+            title: title,
+            description: description,
+            imageUrl: imageUrl,
+            price: price
+        }
+    }
+}
+

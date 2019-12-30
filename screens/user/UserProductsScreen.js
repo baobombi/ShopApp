@@ -2,7 +2,8 @@ import React from 'react'
 import {
     FlatList,
     StyleSheet,
-    Button
+    Button,
+    Alert
 } from 'react-native';
 import ProductItem from '../../components/shop/ProductItem';
 import { useSelector, useDispatch } from 'react-redux';
@@ -19,6 +20,15 @@ const UserProductsScreen = (props) => {
     const editProductHandler = (id) => {
         props.navigation.navigate('EditProduct', { productId: id })
     }
+    const deleteHandler = (id) => {
+        Alert.alert('Are you sure? ', 'Do you really want to delete this item?',
+            [
+                { text: 'No', style: 'cancel' },
+                { text: 'Yes', style: 'destructive', onPress: () => { dispatch(productActions.deleteProduct(id)) } }
+            ],
+            { cancelable: false },
+        );
+    }
 
     return (
         <FlatList
@@ -29,21 +39,20 @@ const UserProductsScreen = (props) => {
                     image={itemData.item.imageUrl}
                     title={itemData.item.title}
                     price={itemData.item.price}
-                    onSelect={() => { editProductHandler(itemData.item)}}
-                    //onAddToCart={() => { }}
+                    onSelect={() => { editProductHandler(itemData.item) }}
+                //onAddToCart={() => { }}
                 >
                     <Button color={Colors.primary} title="Edit" onPress={() => {
-                        editProductHandler(itemData.item)
+                        editProductHandler(itemData.item.id)
                     }} />
 
-                    <Button 
+                    <Button
                         color={Colors.primary}
                         title="Delete"
-                        onPress={() => {
-                            dispatch(productActions.deleteProduct(itemData.item.id))
-                        }}
+                        onPress={deleteHandler.bind(this,itemData.item.id)}
                     />
                 </ProductItem>
+
             }
         />
     );
