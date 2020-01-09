@@ -1,67 +1,182 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useReducer } from 'react'
 import {
 
     View,
     Text,
     StyleSheet,
     ScrollView,
-    TextInput
+    TextInput,
+    Alert
 
 } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import IconHeader from '../../components/UI/IconHeader';
 import * as productActions from '../../store/actions/products'
+import Input from '../../components/UI/Input';
+
+const FORM_INPUT_UPDATE = 'UPDATE'
+
+const formReducer = (state, action) => {
+
+    if (action.type === FORM_INPUT_UPDATE) {
+        const updateValues = {
+            ...state.inputValues,
+            [action.input]: action.value
+        }
+        const updateValidities = {
+            ...state.inputValidities,
+            [action.input]: action.isValid
+        }
+        let updateFormIsValid = true
+        for (const key in updateValidities) {
+            updateFormIsValid = updateFormIsValid && updateValidities[key]
+        }
+        return {
+
+            formIsValid: updateFormIsValid,
+            inputValidities: updateValidities,
+            inputValues: updateValues
+        }
+    }
+    return state
+}
 
 const EditProductScreen = props => {
 
     const dispatch = useDispatch()
     const prodId = props.navigation.getParam('productId')
-    //console.log(prodId.id)
+
 
     const editedProduct = useSelector(state =>
         state.products.userProducts.find(prod => prod.id === prodId)
     )
-    //console.log(editedProduct)
+    const [formState, dispatchFormState] = useReducer(formReducer, {
+        inputValues: {
+            title: editedProduct ? editedProduct.title : '',
+            imageUrl: editedProduct ? editedProduct.imageUrl : '',
+            price: '',
+            description: editedProduct ? editedProduct.description : ''
+
+        },
+        inputValidities: {
+            title: editedProduct ? true : false,
+            imageUrl: editedProduct ? true : false,
+            price: editedProduct ? true : false,
+            description: editedProduct ? true : false,
+        },
+        formIsValid: editedProduct ? true : false,
+    })
+
     //MARK: Properties
-    const [title, setTitle] = useState(editedProduct ? editedProduct.title : '')
-    const [imageUrl, setImageUrl] = useState(editedProduct ? editedProduct.imageUrl : '')
-    const [price, setPrice] = useState('')
-    const [description, setDescription] = useState(editedProduct ? editedProduct.description : '')
+    // const [title, setTitle] = useState(editedProduct ? editedProduct.title : '')
+    // const [titleIsValid, setTitleIsValid] = useState(false)
+
+    // const [imageUrl, setImageUrl] = useState(editedProduct ? editedProduct.imageUrl : '')
+
+    // const [price, setPrice] = useState('')
+    // const [description, setDescription] = useState(editedProduct ? editedProduct.description : '')
 
     const submitHandler = useCallback(() => {
+
+        if (!formState.formIsValid) {
+            Alert.alert(
+                'Wrong Input!!!',
+                'Please check errors in the form ',
+                [
+                    { text: 'OK' }
+                ])
+            return;
+        }
+
         if (editedProduct) {
-            dispatch(productActions.updateProduct(prodId, title, description, imageUrl))
+
+            dispatch(productActions.updateProduct(
+                prodId, formState.inputValues.title,
+                formState.inputValues.description,
+                formState.inputValues.imageUrl
+            ))
         } else {
-            dispatch(productActions.createProduct(title, description, imageUrl, +price))
+            dispatch(productActions.createProduct(
+                formState.inputValues.title,
+                formState.inputValues.description,
+                formState.inputValues.imageUrl,
+                +formState.inputValues.price))
         }
         props.navigation.goBack()
-    }, [dispatch, title, description, imageUrl, price, prodId]);
+    }, [dispatch, formState, prodId]);
 
     useEffect(() => {
         props.navigation.setParams({ submit: submitHandler })
     }, [submitHandler])
+
+    const inputChangeHandler = (inputIdentifier, text) => {
+        let isValid = false
+        if (text.trim().length > 0) {
+            //setTitleIsValid(false)
+            isValid = true
+        } else {
+            // setTitleIsValid(true)
+        }
+        //setTitle(text)
+        dispatchFormState({ type: FORM_INPUT_UPDATE, value: text, isValid: isValid, input: inputIdentifier })
+    }
+
     return (
         <ScrollView>
             <View style={styles.form}>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Title</Text>
-                    <TextInput style={styles.input} value={title} onChangeText={text => setTitle(text)} />
-                </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Image URL</Text>
-                    <TextInput style={styles.input} value={imageUrl} onChangeText={text => setImageUrl(text)} />
-                </View>
-                {editedProduct ? null : <View style={styles.formControl}>
-                    <Text style={styles.label}>Price</Text>
-                    <TextInput style={styles.input} value={price} onChangeText={text => setPrice(text)} />
-                </View>}
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Description</Text>
-                    <TextInput style={styles.input} value={description} onChangeText={text => setDescription(text)} />
-                </View>
+                <Input
+                    id="title"
+                    label="Title"
+                    errorText="Please enter a valid title!"
+                    keyboardType="default"
+                    autoCapitalize="sentences"
+                    autoCorrect
+                    returnKeyType="next"
+                    onInputChange={inputChangeHandler}
+                    initialValue={editedProduct ? editedProduct.title : ''}
+                    initiallyValid={!!editedProduct}
+                    required
+                />
+                <Input
+                    id="imageUrl"
+                    label="Image Url"
+                    errorText="Please enter a valid image url!"
+                    keyboardType="default"
+                    returnKeyType="next"
+                    onInputChange={inputChangeHandler}
+                    initialValue={editedProduct ? editedProduct.imageUrl : ''}
+                    initiallyValid={!!editedProduct}
+                    required
+                />
+                {editedProduct ? null : (
+                    <Input
+                        id="price"
+                        label="Price"
+                        errorText="Please enter a valid price!"
+                        keyboardType="decimal-pad"
+                        returnKeyType="next"
+                        onInputChange={inputChangeHandler}
+                        required
+                        min={0.1}
+                    />
+                )}
+                <Input
+                    id="description"
+                    label="Description"
+                    errorText="Please enter a valid description!"
+                    keyboardType="default"
+                    autoCapitalize="sentences"
+                    autoCorrect
+                    multiline
+                    numberOfLines={3}
+                    onInputChange={inputChangeHandler}
+                    initialValue={editedProduct ? editedProduct.description : ''}
+                    initiallyValid={!!editedProduct}
+                    required
+                    minLength={5}
+                />
             </View>
         </ScrollView>
-
     );
 
 }
@@ -74,24 +189,6 @@ const styles = StyleSheet.create({
 
     },
 
-    formControl: {
-
-        width: '100%'
-    },
-
-    label: {
-
-        marginVertical: 8,
-
-    },
-
-    input: {
-
-        paddingHorizontal: 2,
-        paddingVertical: 5,
-        borderBottomColor: '#ccc',
-        borderBottomWidth: 1,
-    }
 
 })
 EditProductScreen.navigationOptions = navData => {

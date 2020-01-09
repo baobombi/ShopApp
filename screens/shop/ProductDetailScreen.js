@@ -19,9 +19,7 @@ const ProductDetailScreen = (props) => {
 
     const productId = props.navigation.getParam('productId')
 
-    const selectedProduct = useSelector(state =>
-        state.products.availableProducts.find(prod => prod.id === productId)
-    );
+    const selectedProduct = useSelector(state => state.products.availableProducts.find(prod => prod.id === productId));
 
     const currentFavoriteProduct = useSelector(state => state.products.favoriteProduct.some(prod => prod.id === productId));
 
@@ -89,11 +87,13 @@ ProductDetailScreen.navigationOptions = navData => {
     return {
 
         headerTitle: navData.navigation.getParam('productTitle'),
+        headerBackTitle: null,
+
         headerRight: (
             <View style={styles.viewItemIcons}>
                 <IconHeader onTapped={FavShowAlert} name={isFavorite ? 'ios-star' : 'ios-star-outline'} />
             </View>),
-       
+
 
     }
 

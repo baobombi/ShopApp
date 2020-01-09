@@ -23,9 +23,6 @@ const IconHeader = (props) => {
                 backgroundColor='white'
             />
         </View>
-
-
-
     );
 
 }

@@ -2,18 +2,36 @@ import PRODUCTS from '../../data/dummy-data';
 import {
   DELETE_PRODUCT,
   CREATE_PRODUCT,
-  UPDATE_PRODUCT
+  UPDATE_PRODUCT,
+  ADD_FAVORITE_PRODUCT,
+  SET_FILTERS
 } from '../actions/products';
 import Product from '../../models/product';
 
 const initialState = {
   availableProducts: PRODUCTS,
+  favoriteProduct: [],
   userProducts: PRODUCTS.filter(prod => prod.ownerId === 'u1')
 };
 
 export default (state = initialState, action) => {
-  
+
   switch (action.type) {
+
+    case SET_FILTERS:
+    
+
+    case ADD_FAVORITE_PRODUCT:
+      const existingIndex = state.favoriteProduct.findIndex( product => product.id === action.productID)
+      
+      if (existingIndex >= 0){
+        const updateFavProduct = [...state.favoriteProduct]
+        updateFavProduct.splice(existingIndex,1)
+        return {...state, favoriteProduct: updateFavProduct}
+      }else {
+        const product = state.availableProducts.find(pro => pro.id === action.productID)
+        return { ...state, favoriteProduct: state.favoriteProduct.concat(product)}
+      }
 
     case CREATE_PRODUCT:
       const newProduct = new Product(

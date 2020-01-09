@@ -28,6 +28,7 @@ const ProductOverViewScreen = (props) => {
             params: {
                 productId: id,
                 productTitle: title,
+
             }
         })
     }
@@ -71,6 +72,7 @@ ProductOverViewScreen.navigationOptions = navData => {
 
     return {
         headerTitle: 'All Products',
+
         headerRight: <IconHeader
             name={Platform.OS === 'android' ? 'md-cart' : 'ios-cart'}
             onTapped={() => {
@@ -82,7 +84,9 @@ ProductOverViewScreen.navigationOptions = navData => {
             onTapped={() => {
                 navData.navigation.toggleDrawer();
             }}
+
         />,
+        headerBackTitle: 'Back'
 
     };
 

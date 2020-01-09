@@ -39,7 +39,7 @@ const UserProductsScreen = (props) => {
                     image={itemData.item.imageUrl}
                     title={itemData.item.title}
                     price={itemData.item.price}
-                    onSelect={() => { editProductHandler(itemData.item) }}
+                    onSelect={() => { editProductHandler(itemData.item.id) }}
                 //onAddToCart={() => { }}
                 >
                     <Button color={Colors.primary} title="Edit" onPress={() => {

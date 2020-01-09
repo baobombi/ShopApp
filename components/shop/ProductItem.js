@@ -44,7 +44,7 @@ const ProductItem = props => {
 
 const styles = StyleSheet.create({
   product: {
-   
+
     height: 300,
     margin: 20
   },
