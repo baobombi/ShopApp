@@ -2,10 +2,7 @@ import React from 'react'
 import {
     FlatList,
     StyleSheet,
-    Text,
-    YellowBox,
     Platform,
-    Alert,
     Button
 } from 'react-native';
 

@@ -69,21 +69,38 @@ const Input = props => {
         {...props}
         style={styles.input}
         value={inputState.value}
-        onChangeText={textChangeHandler}
+        onChangeText={text => textChangeHandler(text)}
         onBlur={lostFocusHandler}
       />
-      {!inputState.isValid && <Text>{props.errorText}</Text>}
+      {!inputState.isValid && inputState.touched &&
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{props.errorText}</Text>
+        </View>
+      }
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+
+  errorContainer: {
+    marginVertical: 5,
+
+  },
+
+  errorText: {
+
+    fontSize: 14,
+    color: 'red'
+  },
+
   formControl: {
     width: '100%'
   },
   label: {
     //fontFamily: 'open-sans-bold',
-    marginVertical: 8
+    marginVertical: 8,
+    fontSize: 30
   },
   input: {
     paddingHorizontal: 2,
