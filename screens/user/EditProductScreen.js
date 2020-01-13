@@ -45,24 +45,25 @@ const EditProductScreen = props => {
     const dispatch = useDispatch()
     const prodId = props.navigation.getParam('productId')
 
-
     const editedProduct = useSelector(state =>
         state.products.userProducts.find(prod => prod.id === prodId)
     )
     const [formState, dispatchFormState] = useReducer(formReducer, {
+
         inputValues: {
             title: editedProduct ? editedProduct.title : '',
             imageUrl: editedProduct ? editedProduct.imageUrl : '',
             price: '',
             description: editedProduct ? editedProduct.description : ''
-
         },
+
         inputValidities: {
             title: editedProduct ? true : false,
             imageUrl: editedProduct ? true : false,
             price: editedProduct ? true : false,
             description: editedProduct ? true : false,
         },
+        
         formIsValid: editedProduct ? true : false,
     })
 

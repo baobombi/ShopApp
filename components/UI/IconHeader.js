@@ -3,14 +3,10 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import Colors from '../../constants/Colors'
 import {
     View,
-    Text,
     StyleSheet,
-    Button,
-    Alert,
     Platform,
-
-
 } from 'react-native';
+
 Icon.loadFont()
 const IconHeader = (props) => {
     return (
@@ -24,7 +20,6 @@ const IconHeader = (props) => {
             />
         </View>
     );
-
 }
 
 const styles = StyleSheet.create({

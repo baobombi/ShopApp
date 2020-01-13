@@ -14,8 +14,8 @@ import Card from '../UI/Card';
 
 
 const ProductItem = props => {
+  
   let TouchableCmp = TouchableOpacity;
-
   if (Platform.OS === 'android' && Platform.Version >= 21) {
     TouchableCmp = TouchableNativeFeedback;
   }

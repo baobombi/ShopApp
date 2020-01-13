@@ -39,18 +39,11 @@ const ProductsNavtigator = createStackNavigator({
     ProductsOverview: ProductsOverViewScreen,
     ProductDetail: ProductDetailScreen,
     Cart: CartScreen,
-    //Tab: TabBarNavigator
+
 
 }, {
     mode: 'modal',
     initialRouteName: 'ProductsOverview',
-    // navigationOptions: {
-    //     drawerIcon: drawerConfig => <Icon
-    //         name={Platform.OS === 'android' ? 'md-cart' : 'ios-cart'}
-    //         size={23}
-    //         color={drawerConfig.tintColor}
-    //     />
-    // },
     defaultNavigationOptions: defaultNavOptions
 })
 
@@ -109,10 +102,15 @@ const ProductFavTabNavigator =
             activeTintColor: 'white',
             shifting: true,
             barStyle: {
-                backgroundColor: Colors.accentColor
+                // backgroundColor: Colors.accentColor
+                backgroundColor: 'yellow'
             }
         })
         : createBottomTabNavigator(tabScreenConfig, {
+            barStyle: {
+                // backgroundColor: Colors.accentColor
+                backgroundColor: 'yellow'
+            },
             tabBarOptions: {
                 labelStyle: {},
                 activeTintColor: Colors.primary

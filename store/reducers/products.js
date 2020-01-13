@@ -4,7 +4,8 @@ import {
   CREATE_PRODUCT,
   UPDATE_PRODUCT,
   ADD_FAVORITE_PRODUCT,
-  SET_FILTERS
+  SET_FILTERS,
+  SET_PRODUCT
 } from '../actions/products';
 import Product from '../../models/product';
 
@@ -18,24 +19,27 @@ export default (state = initialState, action) => {
 
   switch (action.type) {
 
-    case SET_FILTERS:
-    
+    case SET_PRODUCT:
+      return {
+        availableProducts: action.products,
+        userProducts: action.products.filter(prod => prod.ownerId === 'u1')
+      }
 
     case ADD_FAVORITE_PRODUCT:
-      const existingIndex = state.favoriteProduct.findIndex( product => product.id === action.productID)
-      
-      if (existingIndex >= 0){
+      const existingIndex = state.favoriteProduct.findIndex(product => product.id === action.productID)
+
+      if (existingIndex >= 0) {
         const updateFavProduct = [...state.favoriteProduct]
-        updateFavProduct.splice(existingIndex,1)
-        return {...state, favoriteProduct: updateFavProduct}
-      }else {
+        updateFavProduct.splice(existingIndex, 1)
+        return { ...state, favoriteProduct: updateFavProduct }
+      } else {
         const product = state.availableProducts.find(pro => pro.id === action.productID)
-        return { ...state, favoriteProduct: state.favoriteProduct.concat(product)}
+        return { ...state, favoriteProduct: state.favoriteProduct.concat(product) }
       }
 
     case CREATE_PRODUCT:
       const newProduct = new Product(
-        new Date().toString(),
+        action.productData.id,
         'u1',
         action.productData.title,
         action.productData.imageUrl,

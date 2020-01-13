@@ -1,22 +1,45 @@
-import React from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
     FlatList,
-    StyleSheet,
     Platform,
-    Button
+    Button,
+    ActivityIndicator,
+    View,
+    StyleSheet,
+    Text
 } from 'react-native';
 
 import { useSelector, useDispatch } from 'react-redux'
 import ProductItem from '../../components/shop/ProductItem'
 import * as cartActions from '../../store/actions/cart'
+import * as productsActions from '../../store/actions/products'
 import IconHeader from '../../components/UI/IconHeader';
 import Colors from '../../constants/Colors'
 
 console.disableYellowBox = true;
 
-
-
 const ProductOverViewScreen = (props) => {
+
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState()
+
+    const products = useSelector(state => state.products.availableProducts)
+    const dispatch = useDispatch();
+
+    const loadProducts = useCallback( async () => {
+        setError(null)
+        setIsLoading(true);
+        try {
+            await dispatch(productsActions.fetchProducts())
+        } catch (err) {
+            setError(err.message)
+        }
+        setIsLoading(false)
+    }, [dispatch,setIsLoading,setError])
+
+    useEffect(() => {
+        loadProducts();
+    }, [loadProducts])
 
     const seletectItemHandler = (id, title) => {
 
@@ -25,18 +48,37 @@ const ProductOverViewScreen = (props) => {
             params: {
                 productId: id,
                 productTitle: title,
-
             }
         })
     }
 
-    const products = useSelector(state => state.products.availableProducts)
-    const dispatch = useDispatch();
+    if (isLoading) {
+        return (
+            <View style={styles.centered}>
+                <ActivityIndicator size='large' color={Colors.primary} />
+            </View>
+        )
+    }
+
+    if (error) {
+        return (
+            <View style={styles.centered}>
+                <Text>An Error Occured!!</Text>
+                <Button title='Try Again' onPress={loadProducts} color={Colors.primary}/>
+            </View>
+        )
+    }
+    if (!isLoading && products.length === 0) {
+        return (
+            <View style={styles.centered}>
+                <Text>No products found. Maybe start adding some</Text>
+            </View>
+        )
+    }
 
     return (
         <FlatList
             data={products}
-            //numColumns={2}
             keyExtractor={item => item.id}
             renderItem={
                 itemData => <ProductItem
@@ -46,8 +88,8 @@ const ProductOverViewScreen = (props) => {
                     onSelect={() => {
                         seletectItemHandler(itemData.item.id, itemData.item.title)
                     }}
-
                 >
+
                     <Button
                         color={Colors.primary}
                         title="View Details"
@@ -69,7 +111,6 @@ ProductOverViewScreen.navigationOptions = navData => {
 
     return {
         headerTitle: 'All Products',
-
         headerRight: <IconHeader
             name={Platform.OS === 'android' ? 'md-cart' : 'ios-cart'}
             onTapped={() => {
@@ -91,7 +132,12 @@ ProductOverViewScreen.navigationOptions = navData => {
 
 const styles = StyleSheet.create({
 
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
 
+    }
 });
 
 export default ProductOverViewScreen
