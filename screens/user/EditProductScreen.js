@@ -44,10 +44,14 @@ const EditProductScreen = props => {
 
     const dispatch = useDispatch()
     const prodId = props.navigation.getParam('productId')
-
+        
     const editedProduct = useSelector(state =>
         state.products.userProducts.find(prod => prod.id === prodId)
     )
+
+//   console.log('LOAD PRODUCT ')
+//   console.log(editedProduct)
+
     const [formState, dispatchFormState] = useReducer(formReducer, {
 
         inputValues: {

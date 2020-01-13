@@ -10,9 +10,9 @@ import {
 import Product from '../../models/product';
 
 const initialState = {
-  availableProducts: PRODUCTS,
+  availableProducts: [],
   favoriteProduct: [],
-  userProducts: PRODUCTS.filter(prod => prod.ownerId === 'u1')
+  userProducts: []
 };
 
 export default (state = initialState, action) => {
@@ -21,6 +21,7 @@ export default (state = initialState, action) => {
 
     case SET_PRODUCT:
       return {
+        ...state,
         availableProducts: action.products,
         userProducts: action.products.filter(prod => prod.ownerId === 'u1')
       }

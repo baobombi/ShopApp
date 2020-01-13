@@ -26,7 +26,7 @@ const ProductOverViewScreen = (props) => {
     const products = useSelector(state => state.products.availableProducts)
     const dispatch = useDispatch();
 
-    const loadProducts = useCallback( async () => {
+    const loadProducts = useCallback(async () => {
         setError(null)
         setIsLoading(true);
         try {
@@ -35,10 +35,17 @@ const ProductOverViewScreen = (props) => {
             setError(err.message)
         }
         setIsLoading(false)
-    }, [dispatch,setIsLoading,setError])
+    }, [dispatch, setIsLoading, setError])
 
     useEffect(() => {
         loadProducts();
+    }, [loadProducts])
+
+    useEffect(() => {
+        const willFocusSub = props.navigation.addListener('willFocus', loadProducts)
+        return () => {
+            willFocusSub.remove()
+        }
     }, [loadProducts])
 
     const seletectItemHandler = (id, title) => {
@@ -64,7 +71,7 @@ const ProductOverViewScreen = (props) => {
         return (
             <View style={styles.centered}>
                 <Text>An Error Occured!!</Text>
-                <Button title='Try Again' onPress={loadProducts} color={Colors.primary}/>
+                <Button title='Try Again' onPress={loadProducts} color={Colors.primary} />
             </View>
         )
     }
