@@ -1,17 +1,17 @@
 import React, { useState, useCallback, useEffect, useReducer } from 'react'
 import {
-
     View,
     StyleSheet,
     ScrollView,
     Alert,
-    KeyboardAvoidingView
-
+    KeyboardAvoidingView,
+    ActivityIndicator
 } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import IconHeader from '../../components/UI/IconHeader';
 import * as productActions from '../../store/actions/products'
 import Input from '../../components/UI/Input';
+import Colors from '../../constants/Colors';
 
 const FORM_INPUT_UPDATE = 'UPDATE'
 
@@ -42,15 +42,18 @@ const formReducer = (state, action) => {
 
 const EditProductScreen = props => {
 
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState();
+
     const dispatch = useDispatch()
     const prodId = props.navigation.getParam('productId')
-        
+
     const editedProduct = useSelector(state =>
         state.products.userProducts.find(prod => prod.id === prodId)
     )
 
-//   console.log('LOAD PRODUCT ')
-//   console.log(editedProduct)
+    //   console.log('LOAD PRODUCT ')
+     ///console.log(editedProduct)
 
     const [formState, dispatchFormState] = useReducer(formReducer, {
 
@@ -67,7 +70,7 @@ const EditProductScreen = props => {
             price: editedProduct ? true : false,
             description: editedProduct ? true : false,
         },
-        
+
         formIsValid: editedProduct ? true : false,
     })
 
@@ -80,7 +83,13 @@ const EditProductScreen = props => {
     // const [price, setPrice] = useState('')
     // const [description, setDescription] = useState(editedProduct ? editedProduct.description : '')
 
-    const submitHandler = useCallback(() => {
+    useEffect(() => {
+        if (error) {
+            Alert.alert('An error Occurred', error, [{ text: 'OK'  }])
+        }
+    })
+
+    const submitHandler = useCallback(async () => {
 
         if (!formState.formIsValid) {
             Alert.alert(
@@ -91,22 +100,30 @@ const EditProductScreen = props => {
                 ])
             return;
         }
-
-        if (editedProduct) {
-
-            dispatch(productActions.updateProduct(
-                prodId, formState.inputValues.title,
-                formState.inputValues.description,
-                formState.inputValues.imageUrl
-            ))
-        } else {
-            dispatch(productActions.createProduct(
-                formState.inputValues.title,
-                formState.inputValues.description,
-                formState.inputValues.imageUrl,
-                +formState.inputValues.price))
+        setIsLoading(true)
+        setError(null)
+        try {
+            if (editedProduct) {
+                await dispatch(productActions.updateProduct(
+                    prodId, formState.inputValues.title,
+                    formState.inputValues.description,
+                    formState.inputValues.imageUrl
+                ))
+            } else {
+                await dispatch(productActions.createProduct(
+                    formState.inputValues.title,
+                    formState.inputValues.description,
+                    formState.inputValues.imageUrl,
+                    +formState.inputValues.price))
+            }
+            props.navigation.goBack()
+        } catch (error) {
+            setError(error.message)
         }
-        props.navigation.goBack()
+
+        setIsLoading(false)
+        setError(null)
+        
     }, [dispatch, formState, prodId]);
 
     useEffect(() => {
@@ -118,6 +135,13 @@ const EditProductScreen = props => {
         dispatchFormState({ type: FORM_INPUT_UPDATE, value: inputValue, isValid: inputValidity, input: inputIdentifier })
     }, [dispatchFormState]);
 
+    if (isLoading) {
+        return (
+            <View style={styles.entered}>
+                <ActivityIndicator size='large' color={Colors.primary} />
+            </View>
+        )
+    }
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior='padding' keyboardVerticalOffset={100}>
             <ScrollView>
@@ -187,6 +211,13 @@ const styles = StyleSheet.create({
         margin: 20,
 
     },
+
+    entered: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1
+    }
+
 
 
 })

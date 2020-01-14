@@ -26,7 +26,7 @@ export const fetchProducts = () => {
                 throw new Error('Some thing went wrong!')
             }
             const resData = await response.json()
-            console.log(resData)
+            //console.log(resData)
 
             const loadedProducts = [];
 
@@ -41,7 +41,6 @@ export const fetchProducts = () => {
         } catch (err) {
             throw err
         }
-
     }
 }
 
@@ -53,7 +52,7 @@ export const setFilters = (fiterSettings) => {
     }
 }
 export const addFavoriteProduct = (id) => {
-    
+
     return {
         type: ADD_FAVORITE_PRODUCT,
         productID: id,
@@ -62,15 +61,14 @@ export const addFavoriteProduct = (id) => {
 
 export const deleteProduct = productId => {
     return async dispatch => {
-        await fetch( `https://rn-shopapp-4686f.firebaseio.com/products/${productId}.json`,
-        {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+        const response = await fetch(`https://rn-shopapp-4686f.firebaseio.com/products/${productId}.json`,
+            {
+                method: 'DELETE',
+            })
 
-        })
-
+            if (!response.ok){
+                throw new Error('Some thing went wrong!')
+            }
         dispatch({
             type: DELETE_PRODUCT,
             pid: productId
@@ -94,7 +92,9 @@ export const createProduct = (title, description, imageUrl, price) => {
                 price
             })
         });
-
+        if(!response.ok){
+            throw new Error('Some thing went wrong!!!!!')
+        }
         const resData = await response.json()
 
         dispatch({
@@ -110,31 +110,35 @@ export const createProduct = (title, description, imageUrl, price) => {
     }
 }
 export const updateProduct = (id, title, description, imageUrl) => {
+
     return async dispatch => {
-      await fetch(
-        `https://rn-shopapp-4686f.firebaseio.com/products/${id}.json`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            title,
-            description,
-            imageUrl
-          })
+        const response = await fetch(
+            `https://rn-shopapp-4686f.firebaseio.com/products/${id}.json`,
+            {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title,
+                    description,
+                    imageUrl
+                })
+            }
+        );
+        if (!response.ok) {
+            throw new Error('Some thing went wrong!!!!!')
         }
-      );
-  
-      dispatch({
-        type: UPDATE_PRODUCT,
-        pid: id,
-        productData: {
-          title,
-          description,
-          imageUrl
-        }
-      });
+
+        dispatch({
+            type: UPDATE_PRODUCT,
+            pid: id,
+            productData: {
+                title,
+                description,
+                imageUrl
+            }
+        });
     };
-  };
+};
 

@@ -5,6 +5,7 @@ const INPUT_CHANGE = 'INPUT_CHANGE';
 const INPUT_BLUR = 'INPUT_BLUR';
 
 const inputReducer = (state, action) => {
+  
   switch (action.type) {
     case INPUT_CHANGE:
       return {
@@ -23,6 +24,7 @@ const inputReducer = (state, action) => {
 };
 
 const Input = props => {
+
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.initialValue ? props.initialValue : '',
     isValid: props.initiallyValid,

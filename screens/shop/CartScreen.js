@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import Colors from '../../constants/Colors'
 import {
     View,
     Text,
     StyleSheet,
     Button,
     FlatList,
-    Alert
+    Alert,
+    ActivityIndicator
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'
 import CartItem from '../../components/shop/CartItem';
@@ -15,11 +15,14 @@ import * as ordersActions from '../../store/actions/orders'
 import Card from '../../components/UI/Card';
 import Swipeout from 'react-native-swipeout';
 import Icon from 'react-native-vector-icons/Ionicons'
+import Colors from '../../constants/Colors'
 
 Icon.loadFont();
 
 
 const CartScreen = (props) => {
+
+    const [isLoading, setIsLoading] = useState(false)
     const cartToAmount = useSelector(state => state.cart.totalAmount)
     const cartItems = useSelector(state => {
         const transformedCartItems = [];
@@ -41,27 +44,35 @@ const CartScreen = (props) => {
     })
     const dispatch = useDispatch();
 
+    const sendOrderHandle = async () => {
+        setIsLoading(true)
+        await dispatch(ordersActions.addOrder(cartItems, cartToAmount))
+        setIsLoading(false)
+    }
+
     return (
         <View style={styles.screen}>
             <Card style={styles.summary}>
                 <Text style={styles.summaryText}> Total: <Text style={styles.amount}>${cartToAmount.toFixed(2)}</Text></Text>
-                <Button
-                    color={Colors.accent}
-                    title='Order Now '
-                    disabled={cartItems.length === 0}
-                    onPress={() => {
-                        props.navigation.navigate({
-                            routeName: 'ProductDetail',
-                            params: {
-                                productId: itemData.item.id,
-                                productTitle: itemData.item.title,
-                            }
-                        })
-                    }}
-                    onPress={() => {
-                        dispatch(ordersActions.addOrder(cartItems, cartToAmount))
-                    }}
-                />
+                {isLoading ? <View style={styles.viewLoad}>
+                    <ActivityIndicator size='small' color={Colors.primary} />
+                </View> :
+                    <Button
+                        color={Colors.accent}
+                        title='Order Now '
+                        disabled={cartItems.length === 0}
+                        onPress={() => {
+                            props.navigation.navigate({
+                                routeName: 'ProductDetail',
+                                params: {
+                                    productId: itemData.item.id,
+                                    productTitle: itemData.item.title,
+                                }
+                            })
+                        }}
+                        onPress={sendOrderHandle}
+                    />
+                }
             </Card>
 
             <FlatList
@@ -73,7 +84,7 @@ const CartScreen = (props) => {
                         title={itemData.item.productTitle}
                         amount={itemData.item.sum}
                         deletable
-                        onDeleteProductItem={() => dispatch(cartActions.removeCartItem(itemData.item.productId)) }
+                        onDeleteProductItem={() => dispatch(cartActions.removeCartItem(itemData.item.productId))}
                         onRemove={() => dispatch(cartActions.removeFromCart(itemData.item.productId))}
                     />
                 )}
@@ -89,6 +100,10 @@ CartScreen.navigationOptions = navData => {
 }
 
 const styles = StyleSheet.create({
+
+    viewLoad: {
+        marginRight: 10,
+    },
 
     screen: {
         margin: 20,
