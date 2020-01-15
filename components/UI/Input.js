@@ -5,7 +5,7 @@ const INPUT_CHANGE = 'INPUT_CHANGE';
 const INPUT_BLUR = 'INPUT_BLUR';
 
 const inputReducer = (state, action) => {
-  
+
   switch (action.type) {
     case INPUT_CHANGE:
       return {
@@ -66,10 +66,10 @@ const Input = props => {
 
   return (
     <View style={styles.formControl}>
-      <Text style={styles.label}>{props.label}</Text>
+      {!props.Login && <Text style={styles.label}>{props.label}</Text>}
       <TextInput
         {...props}
-        style={styles.input}
+        style={ !props.Login ?  styles.input : props.style}
         value={inputState.value}
         onChangeText={text => textChangeHandler(text)}
         onBlur={lostFocusHandler}

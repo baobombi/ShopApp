@@ -3,7 +3,10 @@ import {
     Platform,
     Dimensions
 } from 'react-native';
-import { createAppContainer } from 'react-navigation';
+import {
+    createAppContainer,
+    createSwitchNavigator
+} from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
@@ -20,6 +23,7 @@ import FavoritesScreen from '../screens/shop/FavoritesScreen';
 
 import Colors from '../constants/Colors';
 import Icon from 'react-native-vector-icons/Ionicons'
+import AuthScreen from '../screens/user/AuthScreen';
 
 IconFilter.loadFont()
 
@@ -193,5 +197,27 @@ const ShopNavigator = createDrawerNavigator(
     }
 )
 
+const AuthNavigator = createStackNavigator(
+    {
+        Auth: AuthScreen
+    },
+    {
+        headerMode: 'none',
+        defaultNavigationOptions: {
+           
+        }
+    }
+)
+const MainNavigator = createSwitchNavigator(
+    {
+        Auth: AuthNavigator,
+        Shop: ShopNavigator
+    },
+    {
+        initialRouteName: 'Auth',
 
-export default createAppContainer(ShopNavigator)
+    }
+)
+
+
+export default createAppContainer(MainNavigator)

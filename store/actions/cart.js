@@ -8,11 +8,9 @@ export const removeCartItem = (productId) => {
         type: REMOVE_CART_ITEM,
         productID: productId
     }
-
 };
 
 export const addToCart = (product) => {
-
     return {
         type: ADD_TO_CART,
         product: product
