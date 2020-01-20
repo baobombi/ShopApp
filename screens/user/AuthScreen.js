@@ -8,7 +8,8 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     Keyboard,
-    Alert
+    Alert,
+    ActivityIndicator
 } from 'react-native';
 import Input from '../../components/UI/Input';
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -45,10 +46,16 @@ const formReducer = (state, action) => {
     return state
 }
 
-const AuthScreen = () => {
+const AuthScreen = (props) => {
 
     const dispath = useDispatch()
-   
+
+    const [error, setError] = useState('')
+
+    const [isLoginError, setIsLoginError] = useState('')
+    const [isLoginLoading, setIsLoginLoading] = useState(false)
+    const [isSignUpLoading, setIsSignUpLoading] = useState(false)
+
     const [formState, dispatchFormState] = useReducer(formReducer, {
 
         inputValues: {
@@ -69,7 +76,31 @@ const AuthScreen = () => {
         dispatchFormState({ type: FORM_INPUT_UPDATE, value: inputValue, isValid: inputValidity, input: inputIdentifier })
     }, [dispatchFormState]);
 
-    const SignUpHandler = useCallback(() => {
+    const SignUpHandler = useCallback(async () => {
+        setIsLoginError(null)
+        if (!formState.formIsValid) {
+            Alert.alert(
+                'Wrong Input!!!',
+                'Please check errors in the form ',
+                [
+                    { text: 'OK' }
+                ])
+            return;
+        }
+        setError(null)
+        setIsSignUpLoading(true)
+        try {
+
+            await dispath(authActions.SignUp(formState.inputValues.email, formState.inputValues.password))
+        } catch (err) {
+            setError(err.message)
+
+        }
+        setIsSignUpLoading(false)
+    }, [dispath, formState])
+
+    const LoginHandler = useCallback(async () => {
+        setError(null)
 
         if (!formState.formIsValid) {
             Alert.alert(
@@ -80,8 +111,32 @@ const AuthScreen = () => {
                 ])
             return;
         }
-        dispath(authActions.SignUp(formState.inputValues.email, formState.inputValues.password))
-    },[dispath,formState])
+        
+        setIsLoginError(null)
+        setIsLoginLoading(true)
+        try {
+            // console.log('da di vao trong Login Handler try')
+            // console.log(formState.inputValues.email)
+            // console.log(formState.inputValues.password)
+            await dispath(authActions.login(formState.inputValues.email, formState.inputValues.password))
+            props.navigation.navigate('Shop')
+        } catch (err) {
+            setIsLoginError(err.message)
+            //console.log(err.message)
+
+        }
+        setIsLoginLoading(false)
+    }, [dispath, formState])
+
+    useEffect(() => {
+        if (error) {
+            Alert.alert('An Error Occurred', error,
+                [{ text: 'OK' }])
+        }else if(isLoginError){
+            Alert.alert('An Error Occurred', isLoginError,
+                [{ text: 'OK' }])
+        }
+    }, [error,isLoginError])
 
     const Divider = props => {
 
@@ -91,6 +146,8 @@ const AuthScreen = () => {
             <View style={styles.line}></View>
         </View>)
     }
+
+
     return (
 
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -101,7 +158,6 @@ const AuthScreen = () => {
                     <Ionicons name="ios-speedometer" color={Colors.primary} size={100} />
                     <Text style={styles.title}>Enjoy Shopping with Us</Text>
                 </View>
-
 
                 <View style={styles.down}>
 
@@ -130,24 +186,35 @@ const AuthScreen = () => {
                     </View>
 
                     <View style={styles.textInputContainer}>
+
                         <Input
-                            Login
-                            style={styles.textInput}
+                            id="password"
                             placeholder='Enter your Password'
                             keyboardType='default'
+                            style={styles.textInput}
+                            errorText='Please enter a valid Password'
                             secureTextEntry={true}
                             minLength={5}
-                            errorText='Please enter a valid Password'
+                            autoCapitalize="none"
                             onInputChange={inputChangeHandler}
                             initialValue=''
                             required
+                            Login
                         />
                     </View>
 
-                    <TouchableOpacity style={styles.loginButton} onPress={SignUpHandler}>
+                    {
+                        isLoginLoading ?
+                            (
+                                <View style={styles.loginLoading}>
+                                    <ActivityIndicator size='large' color={Colors.primary} />
+                                </View>
+                            )
+                            : <TouchableOpacity style={styles.loginButton} onPress={LoginHandler}>
+                                <Text style={styles.loginButtonTitle}>Login</Text>
+                            </TouchableOpacity>
+                    }
 
-                        <Text style={styles.loginButtonTitle}>Login</Text>
-                    </TouchableOpacity>
                     <Divider style={styles.divider} />
                     <FontAwesome.Button
                         style={styles.facebookButton}
@@ -156,17 +223,21 @@ const AuthScreen = () => {
                         <Text style={styles.loginSocialButton}>Login with Facebook</Text>
                     </FontAwesome.Button>
 
-                    <TouchableOpacity style={styles.signUpButton}>
+                    {
+                        isSignUpLoading ?
+                            (
+                                <View style={styles.signUpLoading} >
+                                    <ActivityIndicator size='large' color={Colors.primary} />
+                                </View>
+                            )
+                            : <TouchableOpacity style={styles.signUpButton} onPress={SignUpHandler} disabled={isLoginLoading}>
+                                <Text style={styles.loginButtonTitle}>Sign Up</Text>
+                            </TouchableOpacity>
+                    }
 
-                        <Text style={styles.loginButtonTitle}>Sign Up</Text>
-                    </TouchableOpacity>
                 </View>
             </View>
-
-
-        </TouchableWithoutFeedback>
-
-
+        </TouchableWithoutFeedback >
     )
 
 }
@@ -236,14 +307,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 6,
-        backgroundColor: 'green',
+        backgroundColor: '#0099CC',
 
     },
 
     signUpButton: {
         height: 45,
         width: 300,
-        backgroundColor: 'green',
+        backgroundColor: '#0099CC',
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 20,
@@ -286,6 +357,10 @@ const styles = StyleSheet.create({
         height: 40,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+
+    signUpLoading: {
+        marginTop: 20,
     }
 })
 
